@@ -21,20 +21,21 @@
     
     RAC(self.signUpButton, enabled) =
     [RACSignal combineLatest:@[self.usernameTextField.rac_textSignal,
-     self.passwordTextField.rac_textSignal,
-     self.confirmPasswordTextField.rac_textSignal]
+                               self.passwordTextField.rac_textSignal,
+                               self.confirmPasswordTextField.rac_textSignal]
                       reduce:^(NSString *username,
                                NSString *password,
                                NSString *passwordConfirm) {
-                            return @(username.length > 5
+                          return @(username.length > 5
                           && password.length > 8
                           && passwordConfirm.length > 8
                           && [password isEqualToString:passwordConfirm]);
                       }];
+    
     RAC(self.errorLabel, text) =
     [RACSignal combineLatest:@[self.usernameTextField.rac_textSignal,
-     self.passwordTextField.rac_textSignal,
-     self.confirmPasswordTextField.rac_textSignal]
+                               self.passwordTextField.rac_textSignal,
+                               self.confirmPasswordTextField.rac_textSignal]
                       reduce:^(NSString *username,
                                NSString *password,
                                NSString *passwordConfirm) {
@@ -48,7 +49,6 @@
                               return @"looks good!";
                           }
                       }];
-    
 }
 
 @end
