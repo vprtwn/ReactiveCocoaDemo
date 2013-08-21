@@ -30,16 +30,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    @weakify(self);
+
 
     // Assign self.amount to a signal mapped from amount textfield
     // - use RAC() to assign a keypath to a signal.
-    RAC(self.amount) =
-    [self.amountTextField.rac_textSignal
-     map:^NSNumber *(NSString *amountText) {
-         return @(amountText.doubleValue);
-     }];
-    
+
+
+
+
+
+
     // Assign self.tipOptions to a signal mapped from self.amount that's
     //  [0, 1, 2, 3] if amount < 10 and [0, .15, .2, .25] otherwise
     // - use RACAble(self.amount) to create a signal that observes a keypath for changes
@@ -47,59 +47,34 @@
     // - use distinctUntilChanged: when you want the signal to only send distinct values
     // - use doNext: to inject side effects into a signal
     // - use weakify and strongify to avoid retain cycles
-    RAC(self.tipOptions) =
-    [[[RACAble(self.amount)
-       map:^NSArray *(NSNumber * amount) {
-           if (amount.doubleValue < 10) {
-               return @[@0, @1, @2, @3];
-           } else {
-               return @[@0, @0.15, @0.2, @0.25];
-           }
-       }] distinctUntilChanged]
-     doNext:^(NSArray *array) {
-         @strongify(self);
-         [self updateTipSegmentedControlWithOptions:array];
-     }];
-    
+
+
+
+
+
+
 
     // Assign self.tip to a signal combining self.amount, self.tipSegmentedControl, and self.tipOptions
     // - use combineLatest:reduce: to combine signals
     // - use rac_signalForControlEvents to get a signal from a UIControl
     // Update self.tipTextField.text whenever self.tip changes 
-    RAC(self.tip) =
-    [[[RACSignal combineLatest:@[RACAble(self.amount),
-                                [self.tipSegmentedControl rac_signalForControlEvents:UIControlEventValueChanged],
-                                 RACAble(self.tipOptions)]
-                       reduce:^(NSNumber *amount, UISegmentedControl *control, NSArray *tipOptions) {
-                           double tip = [tipOptions[control.selectedSegmentIndex] doubleValue];
-                           if (tip < 1) {
-                               return @(amount.doubleValue*tip);
-                           } else {
-                               return @(tip);
-                           }
-                       }
-      ] distinctUntilChanged]
-     doNext:^(NSNumber *tip) {
-         @strongify(self);
-         self.tipTextField.text = [NSString stringWithFormat:@"+ $%.2f", tip.doubleValue];
-     }];
+
+
+
+
+
     
     // Assign self.total to a signal combining amount and tip
     // Update self.totalAmountLabel.text whenever self.total changes
-    RAC(self.total) =
-    [[[RACSignal combineLatest:@[RACAble(self.amount), RACAble(self.tip)]
-                        reduce:^(NSNumber *amount, NSNumber *tip) {
-                            return @(amount.doubleValue + tip.doubleValue);
-                        }
-       ] distinctUntilChanged]
-     doNext:^(NSNumber *total) {
-         @strongify(self);
-         self.totalAmountLabel.text = [NSString stringWithFormat:@"$%.2f", total.doubleValue];
-     }];
+
+
+
+
+
     
     // combineLatest: only sends a value once both streams are non empty
     // so we need to make sure RACAble(self.tip) is a non-empty stream
-    self.tip = @(0);
+
     
 
     
