@@ -62,18 +62,17 @@
      }];
     
 
-    // Assign self.tip to a signal combining self.amount, self.tipSegmentedControl, and self.tipOptions
+    // Assign self.tip to a signal combining self.amount and self.tipSegmentedControl
     // - use combineLatest:reduce: to combine signals
     // - use rac_signalForControlEvents to get a signal from a UIControl
     // Update self.tipTextField.text whenever self.tip changes 
     RAC(self.tip) =
     [[[RACSignal combineLatest:@[RACAble(self.amount),
-                                [self.tipSegmentedControl rac_signalForControlEvents:UIControlEventValueChanged],
-                                 RACAble(self.tipOptions)]
-                       reduce:^(NSNumber *amount, UISegmentedControl *control, NSArray *tipOptions) {
-                           double tip = [tipOptions[control.selectedSegmentIndex] doubleValue];
+                                [self.tipSegmentedControl rac_signalForControlEvents:UIControlEventValueChanged]]
+                       reduce:^(NSNumber *amount, UISegmentedControl *control) {
+                           double tip = [self.tipOptions[control.selectedSegmentIndex] doubleValue];
                            if (tip < 1) {
-                               return @(amount.doubleValue*tip);
+                               return @(self.amount.doubleValue*tip);
                            } else {
                                return @(tip);
                            }
